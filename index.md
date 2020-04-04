@@ -37,7 +37,9 @@ LoadModule ssl_module modules/mod_ssl.so
 ```
 2. 添加域名配置: 新建 `/etc/httpd/conf.d/abc.yourdomain.net.conf`
 此处3579为内部转发使用的任选端口号
-此处/ray 为apache转发v2ray流量使用的识别符，后续v2ray客户端中需要对应
+此处/ray 为apache转发v2ray流量使用的识别符，后续v2ray客户端中需要对应.  
+
+
 ```
 <VirtualHost *:443>
     DocumentRoot /var/www/html/
