@@ -19,7 +19,8 @@ source ~/.bashrc
 ~/.acme.sh/acme.sh/ --installcert -d abc.mydomain.net --fullchainpath /etc/v2ray/v2ray.crt --keypath /etc/v2ray/v2ray.key --ecc
 ```
 ## 更新
-申请证书后会自动添加cronjob自动更新证书，可`crontab -e`查看。也可以`acme.sh --upgrade --auto-upgrade`确保。
+申请证书后会自动添加cronjob自动更新证书，可`crontab -e`查看。  
+也可以`acme.sh --upgrade --auto-upgrade`确保。  
 手动强制更新：`acme.sh --cron -f`  
 
 
