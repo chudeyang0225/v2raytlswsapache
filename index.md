@@ -30,6 +30,7 @@ yum -y instsall mod_ssl
 1. 修改httpd.conf  `/etc/httpd/conf/httpd.conf`
 注释掉`listen port 80`避免证书申请/更新时端口冲突
 文末添加两行：
+
 ```
 LoadModule rewrite_module modules/mod_rewrite.so
 LoadModule ssl_module modules/mod_ssl.so
