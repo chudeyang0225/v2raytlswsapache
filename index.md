@@ -1,7 +1,7 @@
 **V2ray+tls+ws (Centos7, Apache)**
 
 # 申请证书
-使用acme.sh申请域名证书，需要独占80端口，所以在下面步骤中会禁用apache监听80端口。
+使用acme.sh申请域名证书，需要独占80端口，所以在下面步骤中会禁用apache监听80端口、或设置在申请/更新时自动临时关闭apache服务器。
 ## 安装
 ```
 yum -y install netcat
@@ -12,17 +12,16 @@ source ~/.bashrc
 ```
 ~/.acme.sh/acme.sh --issue -d abc.mydomain.net --standalone -k ec-256
 ```
+需要自动临时关闭apache服务器并在事后自动重启，需要在这行命令添加pre-hook和post-hook。这里添加的hook会自动生效到更新证书的cronjob里。如果这里没有添加，事后无法在cronjob中手动添加。
+```
+~/.acme.sh/acme.sh --issue -d abc.mydomain.net --standalone -k ec-256 --pre-hook "systemctl stop httpd" --post-hook "systemctl restart httpd"
+```
 ## 安装证书到/etc/v2ray/文件夹
 安装位置及证书名都可以自定义，在下文Apache设置中需要对应
 安装后将来的更新证书不需要手动再安装一次
 ```
 ~/.acme.sh/acme.sh/ --installcert -d abc.mydomain.net --fullchainpath /etc/v2ray/v2ray.crt --keypath /etc/v2ray/v2ray.key --ecc
 ```
-## 更新
-申请证书后会自动添加cronjob自动更新证书，可`crontab -e`查看。  
-也可以`acme.sh --upgrade --auto-upgrade`确保。  
-手动强制更新：`acme.sh --cron -f`  
-
 
 # 配置Apache(httpd)
 ## 安装
@@ -35,16 +34,13 @@ yum -y instsall mod_ssl
 1. 修改httpd.conf  `/etc/httpd/conf/httpd.conf`
 注释掉`listen port 80`避免证书申请/更新时端口冲突
 文末添加两行：
-
 ```
 LoadModule rewrite_module modules/mod_rewrite.so
 LoadModule ssl_module modules/mod_ssl.so
 ```
 2. 添加域名配置: 新建 `/etc/httpd/conf.d/abc.yourdomain.net.conf`
-此处3579为内部转发使用的任选端口号
-此处/ray 为apache转发v2ray流量使用的识别符，后续v2ray客户端中需要对应.  
-
-
+**此处3579为内部转发使用的任选端口号**
+**此处/ray 为apache转发v2ray流量使用的识别符，后续v2ray客户端中需要对应**
 ```
 <VirtualHost *:443>
     DocumentRoot /var/www/html/
